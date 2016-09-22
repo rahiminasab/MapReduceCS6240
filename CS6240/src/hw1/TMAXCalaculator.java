@@ -6,19 +6,34 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import hw1.misc.AverageInfo;
-import hw1.misc.RunTimeStat;
-import hw1.misc.TmaxRecord;
+import hw1.helpers.AverageInfo;
+import hw1.helpers.TmaxRecord;
 
-
+/*
+ * Each of the 5 version of calculating the averages inherits from this abstract class.  
+ * All children should implement the clac method.
+ */
 public abstract class TMAXCalaculator {
 	
     private static final String TMAX_ID = "TMAX";
 	
-	protected static ArrayList<String> dataLines;
-	protected static int numberOfRecords = 0;
+	protected static ArrayList<String> dataLines; //stores the lines of weather data file.
+	protected static int numberOfRecords = 0; //number of records in weather data file.
+	
+	/*
+	 * a Map structure which holds stations as keys, and objects of AverageInfo as values.
+	 * The average TMAX for a station key is always saved in an AverageInfo value object.
+	 */
 	public static HashMap<String, AverageInfo> aveMap = new HashMap<String, AverageInfo>();
 	
+	/*
+	 * name of this calculator, which can be one of the followings:
+	 * - SEQUENTIAL
+	 * - NO-LOCK
+	 * - COARSE-LOCK
+	 * - FINE_LOCK
+	 * - NO_SHARE
+	 */
 	protected String name;
 	
 	public static void clearMap() {
@@ -34,21 +49,30 @@ public abstract class TMAXCalaculator {
 		numberOfRecords = dataLines.size();
 	}
 	
+	/*
+	 * stores all the records as separate lines in dataLines.
+	 */
 	private ArrayList<String> readInput(String path) {
-		ArrayList<String> lines = new ArrayList<String>();
+		ArrayList<String> lines = null;
 		File f = new File(path);
 		try {
+			lines = new ArrayList<String>();
 			Scanner inputStream = new Scanner(f);
 			while(inputStream.hasNextLine()) {
 				lines.add(inputStream.nextLine());
 			}
 			inputStream.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			System.err.println("The path to whether data is invalid!");
+			System.exit(0);
 		}
 		return lines;
 	}
 	
+	/*
+	 * if a record has TMAX_ID in the third column, then we return a TmaxRecord object which
+	 * stores its station name and the reading for the tmax of that station.
+	 */
 	protected static TmaxRecord parseLine(String line) {
 		String[] info = line.split(",");
 		String station = info[0];
@@ -67,6 +91,11 @@ public abstract class TMAXCalaculator {
 		return null;
 	}
 	
+	/*
+	 * This method processes the dataLines from index "from" to index "to" and saves the 
+	 * results in the given map.
+	 * the forth argument is a boolean which specifies whether we should enforce delays with Fib(17) or not.
+	 */
 	public static void computeAverages(int from, int to, HashMap<String, AverageInfo> map, boolean withDelays) {
 		for(int i = from; i < to; i++) {
 			TmaxRecord record = parseLine(dataLines.get(i));
@@ -75,6 +104,9 @@ public abstract class TMAXCalaculator {
 		}
 	}
 	
+	/*
+	 * inserts a TmaxRecord to the given map where the third argument specifies whether we have dleays with Fib(17) or not.
+	 */
 	protected static void insertRecord(TmaxRecord record, HashMap<String, AverageInfo> map, boolean withDelays) {
 		AverageInfo info = map.get(record.getStation());
 		if(info != null)
@@ -86,21 +118,12 @@ public abstract class TMAXCalaculator {
 		}
 	}
 	
+	/*
+	 * the main command to start the calculations is this function.
+	 * children of this class may have different approaches for average computation (ex. sequential/parallel).
+	 * That difference is reflected by this method.
+	 */
 	protected abstract void calc(boolean withDelays) throws InterruptedException;
 	
-	protected static void runJob(TMAXCalaculator obj, boolean withDelays) throws InterruptedException {
-		String prefix = (withDelays)? "with" : "without";
-		System.out.println(prefix+" delay version:");
-		long[] runtimes = new long[10];
-		for(int i = 0; i < runtimes.length; i++) {
-			long start = System.currentTimeMillis();
-			obj.calc(withDelays);
-			long end = System.currentTimeMillis(); 
-			runtimes[i] = end-start;
-		}
-		RunTimeStat stats = new RunTimeStat(runtimes);
-		stats.printResultsFor(obj.name);
-		System.out.println("--------------------------------------------------\n");
-		
-	}
+	
 }

@@ -1,17 +1,14 @@
 package hw1.parallels;
 
+/*
+ * An object of this class uses the same computeAverge function as its parent which has
+ * no lock anywhere.
+ */
 public class NOLOCK_TMAX_Calculator extends ParallelTMAXCalculator {
 	
-	NOLOCK_TMAX_Calculator(String inputPath) {
+	public NOLOCK_TMAX_Calculator(String inputPath) {
 		super(inputPath);
 		name = "NO-LOCK";
-	}
-
-	public static void main(String[] args) throws InterruptedException {
-		NOLOCK_TMAX_Calculator obj = new NOLOCK_TMAX_Calculator("/home/ehsan/Desktop/MapReduce/HW1/input/1877.csv");
-		runJob(obj, false);
-		runJob(obj, true);
-		//System.out.println(TMAXCalaculator.aveMap.get("CA007025280").getAverage());
 	}
 
 }

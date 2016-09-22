@@ -2,16 +2,23 @@ package hw1.parallels;
 
 import java.util.HashMap;
 
-import hw1.misc.AverageInfo;
-import hw1.misc.TmaxRecord;
+import hw1.helpers.AverageInfo;
+import hw1.helpers.TmaxRecord;
 
+/*
+ * an object of this class uses the same map as its parent for storing the results, but has
+ * its own computeAverages function, which holds a lock on the parent map.
+ */
 public class COARSE_TMAX_Calculator extends ParallelTMAXCalculator {
 	
-	COARSE_TMAX_Calculator(String inputPath) {
+	public COARSE_TMAX_Calculator(String inputPath) {
 		super(inputPath);
 		name = "COARSE-LOCK";
 	}
 	
+	/*
+	 * same as parent computeAverges but it calls this insertRecord function.
+	 */
 	public static void computeAverages(int from, int to, HashMap<String, AverageInfo> map, boolean withDelays) {
 		for(int i = from; i < to; i++) {
 			TmaxRecord record = parseLine(dataLines.get(i));
@@ -20,6 +27,9 @@ public class COARSE_TMAX_Calculator extends ParallelTMAXCalculator {
 		}
 	}
 	
+	/*
+	 * same as parent insertRecord function, but it has a lock on the whole map.
+	 */
 	protected static void insertRecord(TmaxRecord record, HashMap<String, AverageInfo> map, boolean withDelays) {
 		synchronized (map) {
 			AverageInfo info = map.get(record.getStation());
@@ -32,13 +42,6 @@ public class COARSE_TMAX_Calculator extends ParallelTMAXCalculator {
 			}
 		}
 		
-	}
-	
-	public static void main(String[] args) throws InterruptedException {
-		COARSE_TMAX_Calculator obj = new COARSE_TMAX_Calculator("/home/ehsan/Desktop/MapReduce/HW1/input/1877.csv");
-		runJob(obj, false);
-		runJob(obj, true);
-		//System.out.println(TMAXCalaculator.aveMap.get("CA007025280").getAverage());
 	}
 
 }

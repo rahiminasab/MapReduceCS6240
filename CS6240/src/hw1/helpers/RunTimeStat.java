@@ -1,5 +1,8 @@
-package hw1.misc;
+package hw1.helpers;
 
+/*
+ * given an array of running times, this class will compute what are min/max/average running times.
+ */
 public class RunTimeStat {
 	private long max;
 	private long min;

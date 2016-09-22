@@ -14,11 +14,17 @@ public class TestRun {
 	private static final String FINE = "-fine";
 	private static final String NOSHARE = "-noshare";
 	private static final String DELAYED = "-d";
+	private static final int NUMBER_OF_RUNS = 10;
 	
+	/*
+	 * runs the clac function for NUMBER_OF_RUNS and stores the running times in an array,
+	 * then it passes that array to RunTimeStat class for computing min/max/average running times
+	 * and then prints them.
+	 */
 	public static void runJob(TMAXCalaculator obj, boolean withDelays) throws InterruptedException {
 		String prefix = (withDelays)? "with" : "without";
 		System.out.println(prefix+" delay version:");
-		long[] runtimes = new long[10];
+		long[] runtimes = new long[NUMBER_OF_RUNS];
 		for(int i = 0; i < runtimes.length; i++) {
 			long start = System.currentTimeMillis();
 			obj.calc(withDelays);
@@ -31,6 +37,18 @@ public class TestRun {
 		
 	}
 	
+	/*
+	 * the main method of program which needs at least two arguments,
+	 * the first is the path to weather data.
+	 * second is a key for the type of computation as described in the printHelp, it should be one of:
+	 * 	-sequential
+	 *  -nolock
+	 *  -coarse
+	 *  -fine
+	 *  -noshare
+	 * third is optional which if present specifies we should have delays with Fib(17).
+	 *  -d
+	 */
 	public static void main(String[] args) throws InterruptedException {
 		if(args.length < 2) {
 			printHelp();
@@ -48,39 +66,40 @@ public class TestRun {
 			}
 		}
 		
-		TMAXCalaculator obj = null;
+		TMAXCalaculator calculator = null;
 		
 		switch (method) {
 		case SEQUENTIAL:
-			obj = new SEQ_TMAX_Calculator(path);
+			calculator = new SEQ_TMAX_Calculator(path);
 			break;
 		case NOLOCK:
-			obj = new NOLOCK_TMAX_Calculator(path);
+			calculator = new NOLOCK_TMAX_Calculator(path);
 			break;
 		
 		case COARSE:
-			obj = new COARSE_TMAX_Calculator(path);
+			calculator = new COARSE_TMAX_Calculator(path);
 			break;
 		
 		case FINE:
-			obj = new FINE_TMAX_Calculator(path);
+			calculator = new FINE_TMAX_Calculator(path);
 			break;
 		
 		case NOSHARE:
-			obj = new NOSHARE_TMAX_Calculator(path);
+			calculator = new NOSHARE_TMAX_Calculator(path);
 			break;
 
 		default:
 			printHelp();
 			return;
 		}
-		runJob(obj, isDelayed);
+		runJob(calculator, isDelayed);
+		//System.out.println(TMAXCalaculator.aveMap.get("CA007025280").getAverage());
 	}
 	
 	public static void printHelp() {
 		System.out.println("You need to provide at least two arguments in orer to run this program!\n");
 		System.out.println("The first argument should be the path of the file which has the weather data.\n");
-		System.out.println("The second argument specifies the method of computation which will be used by program, which is one of the followings:");
+		System.out.println("The second argument specifies the method of computation which will be used by program, and is one of the followings:");
 		System.out.println("\t -sequential");
 		System.out.println("\t -nolock");
 		System.out.println("\t -coarse");

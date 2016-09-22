@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import hw1.TMAXCalaculator;
-import hw1.misc.AverageInfo;
+import hw1.helpers.AverageInfo;
 
+/*
+ * All TMAX calculators which have a parallel approach should be a child of this super class.
+ */
 public class ParallelTMAXCalculator extends TMAXCalaculator {
 	
 	private static final int MAX_NUM_THREADS = 4;
@@ -13,7 +16,9 @@ public class ParallelTMAXCalculator extends TMAXCalaculator {
 	protected ParallelTMAXCalculator(String inputPath) {
 		super(inputPath);
 	}
-
+	
+	// the records are split equally between the threads to compute averages.
+	// Children will tell the WorkThreads the way to compute averages.
 	@Override
 	protected void calc(boolean withDelays) throws InterruptedException {
 		
@@ -37,12 +42,16 @@ public class ParallelTMAXCalculator extends TMAXCalaculator {
             pool.get(i).join();
         }
         
+        //If this is an instance of parallel NOSHARE calculator, then we should merge the maps.
         if(this instanceof NOSHARE_TMAX_Calculator) {
         	mergeMaps(pool, TMAXCalaculator.aveMap);
         }
 
 	}
 	
+	/*
+	 * merges the maps of the working threads in the given map.
+	 */
 	private void mergeMaps(ArrayList<WorkThread> pool, HashMap<String, AverageInfo> map) {
 		for(WorkThread t : pool) {
 			HashMap<String, AverageInfo> subMap = t.aveMap;
@@ -59,11 +68,14 @@ public class ParallelTMAXCalculator extends TMAXCalaculator {
 
 }
 
+/*
+ * The only thread class for all parallel calculators.
+ */
 class WorkThread extends Thread {
 	int from = -1;
 	int to = -1;
 	ParallelTMAXCalculator calculator;
-	HashMap<String, AverageInfo> aveMap;
+	HashMap<String, AverageInfo> aveMap; // to be used in NOSHARE case.
 	boolean withDelays;
 	
 	public WorkThread(int from, int to, ParallelTMAXCalculator obj, boolean withDelays) {
@@ -74,6 +86,15 @@ class WorkThread extends Thread {
 		this.withDelays = withDelays;
 	}
 	
+	/*
+	 * Each parallel calculator has its own compute averages function.
+	 * NOLOCK:  Just uses its parent function and there is no lock on anything there.
+	 * COARSE:  uses its own compute average function which has a lock on the whole TMAXCalaculator.aveMap.
+	 * FINE:    Has its own map (i.e. FINE_TMAX_Calculator.aveMap) and its own compute averages function, 
+	 *          in which we use the synchronizedAverageUpdate to have a lock only on value objects.
+	 * NOSHARE: Uses this WorkThread map to store the intermediate results. It uses also its parent 
+	 *          compute average function. 
+	 */
 	@Override
 	public void run() {
 		if(calculator instanceof NOLOCK_TMAX_Calculator) {
