@@ -1,4 +1,4 @@
-package hw1.helpers;
+package weatherdata.helpers;
 
 /*
  * Objects of this class hold the average TMAX for an station.
@@ -22,8 +22,8 @@ public class AverageInfo  {
 	/*
 	 * updating the average after reading a new tmax for an station which is paired by this object.
 	 */
-	public void updateAverage(double newInstance, boolean withDelays) {
-		if(withDelays)
+	public void updateAverage(double newInstance, boolean isDelayed) {
+		if(isDelayed)
 			fibonacciBarrier(N);
 		numOfInstances++;
 		average += (newInstance - average)/(numOfInstances);
@@ -34,8 +34,8 @@ public class AverageInfo  {
 	 * an alternative way is to lock this object in the following function, but I prefer it to be
 	 * in this way.
 	 */
-	public synchronized void synchronizedUpdateAverage(double newInstance, boolean withDelays) {
-		if(withDelays)
+	public synchronized void synchronizedUpdateAverage(double newInstance, boolean isDelayed) {
+		if(isDelayed)
 			fibonacciBarrier(N);
 		numOfInstances++;
 		average += (newInstance - average)/(numOfInstances);

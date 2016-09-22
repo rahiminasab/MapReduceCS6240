@@ -1,4 +1,4 @@
-package hw1;
+package weatherdata;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import hw1.helpers.AverageInfo;
-import hw1.helpers.TmaxRecord;
+import weatherdata.helpers.AverageInfo;
+import weatherdata.helpers.TmaxRecord;
 
 /*
  * Each of the 5 version of calculating the averages inherits from this abstract class.  
@@ -63,7 +63,7 @@ public abstract class TMAXCalaculator {
 			}
 			inputStream.close();
 		} catch (FileNotFoundException e) {
-			System.err.println("The path to whether data is invalid!");
+			System.err.println("The path to weather data is invalid!");
 			System.exit(0);
 		}
 		return lines;
@@ -96,24 +96,24 @@ public abstract class TMAXCalaculator {
 	 * results in the given map.
 	 * the forth argument is a boolean which specifies whether we should enforce delays with Fib(17) or not.
 	 */
-	public static void computeAverages(int from, int to, HashMap<String, AverageInfo> map, boolean withDelays) {
+	public static void computeAverages(int from, int to, HashMap<String, AverageInfo> map, boolean isDelayed) {
 		for(int i = from; i < to; i++) {
 			TmaxRecord record = parseLine(dataLines.get(i));
 			if(record != null)
-				insertRecord(record, map, withDelays);	
+				insertRecord(record, map, isDelayed);	
 		}
 	}
 	
 	/*
 	 * inserts a TmaxRecord to the given map where the third argument specifies whether we have dleays with Fib(17) or not.
 	 */
-	protected static void insertRecord(TmaxRecord record, HashMap<String, AverageInfo> map, boolean withDelays) {
+	protected static void insertRecord(TmaxRecord record, HashMap<String, AverageInfo> map, boolean isDelayed) {
 		AverageInfo info = map.get(record.getStation());
 		if(info != null)
-			info.updateAverage(record.getReading(), withDelays);
+			info.updateAverage(record.getReading(), isDelayed);
 		else {
 		    info = new AverageInfo();
-			info.updateAverage(record.getReading(), withDelays);
+			info.updateAverage(record.getReading(), isDelayed);
 			map.put(record.getStation(), info);
 		}
 	}
@@ -123,7 +123,7 @@ public abstract class TMAXCalaculator {
 	 * children of this class may have different approaches for average computation (ex. sequential/parallel).
 	 * That difference is reflected by this method.
 	 */
-	protected abstract void calc(boolean withDelays) throws InterruptedException;
+	protected abstract void calc(boolean isDelayed) throws InterruptedException;
 	
 	
 }

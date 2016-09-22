@@ -1,4 +1,4 @@
-package hw1.helpers;
+package weatherdata.helpers;
 
 /*
  * given an array of running times, this class will compute what are min/max/average running times.

@@ -1,11 +1,11 @@
-package hw1;
+package weatherdata;
 
-import hw1.helpers.RunTimeStat;
-import hw1.parallels.COARSE_TMAX_Calculator;
-import hw1.parallels.FINE_TMAX_Calculator;
-import hw1.parallels.NOLOCK_TMAX_Calculator;
-import hw1.parallels.NOSHARE_TMAX_Calculator;
-import hw1.sequential.SEQ_TMAX_Calculator;
+import weatherdata.helpers.RunTimeStat;
+import weatherdata.parallels.COARSE_TMAXCalculator;
+import weatherdata.parallels.FINE_TMAXCalculator;
+import weatherdata.parallels.NOLOCK_TMAXCalculator;
+import weatherdata.parallels.NOSHARE_TMAXCalculator;
+import weatherdata.sequential.SEQ_TMAXCalculator;
 
 public class TestRun {
 	private static final String SEQUENTIAL = "-sequential";
@@ -21,13 +21,13 @@ public class TestRun {
 	 * then it passes that array to RunTimeStat class for computing min/max/average running times
 	 * and then prints them.
 	 */
-	public static void runJob(TMAXCalaculator obj, boolean withDelays) throws InterruptedException {
-		String prefix = (withDelays)? "with" : "without";
+	public static void runJob(TMAXCalaculator obj, boolean isDelayed) throws InterruptedException {
+		String prefix = (isDelayed)? "with" : "without";
 		System.out.println(prefix+" delay version:");
 		long[] runtimes = new long[NUMBER_OF_RUNS];
 		for(int i = 0; i < runtimes.length; i++) {
 			long start = System.currentTimeMillis();
-			obj.calc(withDelays);
+			obj.calc(isDelayed);
 			long end = System.currentTimeMillis(); 
 			runtimes[i] = end-start;
 		}
@@ -70,22 +70,22 @@ public class TestRun {
 		
 		switch (method) {
 		case SEQUENTIAL:
-			calculator = new SEQ_TMAX_Calculator(path);
+			calculator = new SEQ_TMAXCalculator(path);
 			break;
 		case NOLOCK:
-			calculator = new NOLOCK_TMAX_Calculator(path);
+			calculator = new NOLOCK_TMAXCalculator(path);
 			break;
 		
 		case COARSE:
-			calculator = new COARSE_TMAX_Calculator(path);
+			calculator = new COARSE_TMAXCalculator(path);
 			break;
 		
 		case FINE:
-			calculator = new FINE_TMAX_Calculator(path);
+			calculator = new FINE_TMAXCalculator(path);
 			break;
 		
 		case NOSHARE:
-			calculator = new NOSHARE_TMAX_Calculator(path);
+			calculator = new NOSHARE_TMAXCalculator(path);
 			break;
 
 		default:
@@ -97,16 +97,18 @@ public class TestRun {
 	}
 	
 	public static void printHelp() {
-		System.out.println("You need to provide at least two arguments in orer to run this program!\n");
+		System.out.println("You need to provide at least two arguments in order to run this program!\n");
 		System.out.println("The first argument should be the path of the file which has the weather data.\n");
-		System.out.println("The second argument specifies the method of computation which will be used by program, and is one of the followings:");
+		System.out.println("The second argument specifies the method of computation. It should be one of the followings:");
 		System.out.println("\t -sequential");
 		System.out.println("\t -nolock");
 		System.out.println("\t -coarse");
 		System.out.println("\t -fine");
 		System.out.println("\t -noshare\n");
-		System.out.println("The third argument (optional) which specifies that the computation should be slowed down, is:");
-		System.out.println("\t -d");
+		System.out.println("The third argument (optional) by which the computation will be slowed down is:");
+		System.out.println("\t -d\n");
+		System.out.println("example: ");
+		System.out.println("java -jar TMAXCalculator.jar input/1877.csv -sequential -d");
 		
 	}
 }

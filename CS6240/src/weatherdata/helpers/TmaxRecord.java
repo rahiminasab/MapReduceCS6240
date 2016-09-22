@@ -1,4 +1,4 @@
-package hw1.helpers;
+package weatherdata.helpers;
 
 /*
  * An object which saves the station and the reading for TMAX of that station.

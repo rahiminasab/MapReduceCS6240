@@ -1,10 +1,10 @@
-package hw1.parallels;
+package weatherdata.parallels;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import hw1.TMAXCalaculator;
-import hw1.helpers.AverageInfo;
+import weatherdata.TMAXCalaculator;
+import weatherdata.helpers.AverageInfo;
 
 /*
  * All TMAX calculators which have a parallel approach should be a child of this super class.
@@ -20,7 +20,7 @@ public class ParallelTMAXCalculator extends TMAXCalaculator {
 	// the records are split equally between the threads to compute averages.
 	// Children will tell the WorkThreads the way to compute averages.
 	@Override
-	protected void calc(boolean withDelays) throws InterruptedException {
+	protected void calc(boolean isDelayed) throws InterruptedException {
 		
 		TMAXCalaculator.clearMap();
 		
@@ -32,7 +32,7 @@ public class ParallelTMAXCalculator extends TMAXCalaculator {
 		for(int i = 0; i < MAX_NUM_THREADS; i++) {
 			int from = i*recordsPerWorker;
 			int to = (i+1)*recordsPerWorker + ((i==MAX_NUM_THREADS-1)?numOfRecords%MAX_NUM_THREADS : 0);
-			pool.add(new WorkThread(from, to, this, withDelays));
+			pool.add(new WorkThread(from, to, this, isDelayed));
 		}
 		for(int i = 0; i < MAX_NUM_THREADS; ++i) {
 			pool.get(i).start();
@@ -43,7 +43,7 @@ public class ParallelTMAXCalculator extends TMAXCalaculator {
         }
         
         //If this is an instance of parallel NOSHARE calculator, then we should merge the maps.
-        if(this instanceof NOSHARE_TMAX_Calculator) {
+        if(this instanceof NOSHARE_TMAXCalculator) {
         	mergeMaps(pool, TMAXCalaculator.aveMap);
         }
 
@@ -76,14 +76,14 @@ class WorkThread extends Thread {
 	int to = -1;
 	ParallelTMAXCalculator calculator;
 	HashMap<String, AverageInfo> aveMap; // to be used in NOSHARE case.
-	boolean withDelays;
+	boolean isDelayed;
 	
-	public WorkThread(int from, int to, ParallelTMAXCalculator obj, boolean withDelays) {
+	public WorkThread(int from, int to, ParallelTMAXCalculator obj, boolean isDelayed) {
 		this.from = from;
 		this.to = to;
 		this.calculator = obj;
 		aveMap = new HashMap<String, AverageInfo>();
-		this.withDelays = withDelays;
+		this.isDelayed = isDelayed;
 	}
 	
 	/*
@@ -97,17 +97,17 @@ class WorkThread extends Thread {
 	 */
 	@Override
 	public void run() {
-		if(calculator instanceof NOLOCK_TMAX_Calculator) {
-			NOLOCK_TMAX_Calculator.computeAverages(from, to, TMAXCalaculator.aveMap, withDelays);
+		if(calculator instanceof NOLOCK_TMAXCalculator) {
+			NOLOCK_TMAXCalculator.computeAverages(from, to, TMAXCalaculator.aveMap, isDelayed);
 			return;
-		} else if(calculator instanceof COARSE_TMAX_Calculator) {
-			COARSE_TMAX_Calculator.computeAverages(from, to, TMAXCalaculator.aveMap, withDelays);
+		} else if(calculator instanceof COARSE_TMAXCalculator) {
+			COARSE_TMAXCalculator.computeAverages(from, to, TMAXCalaculator.aveMap, isDelayed);
 			return;
-		} else if(calculator instanceof FINE_TMAX_Calculator) {
-			FINE_TMAX_Calculator.computeAverages(from, to, FINE_TMAX_Calculator.aveMap, withDelays);
+		} else if(calculator instanceof FINE_TMAXCalculator) {
+			FINE_TMAXCalculator.computeAverages(from, to, FINE_TMAXCalculator.aveMap, isDelayed);
 			return;
-		} else if(calculator instanceof NOSHARE_TMAX_Calculator) {
-			NOSHARE_TMAX_Calculator.computeAverages(from, to, aveMap, withDelays);
+		} else if(calculator instanceof NOSHARE_TMAXCalculator) {
+			NOSHARE_TMAXCalculator.computeAverages(from, to, aveMap, isDelayed);
 			return;
 		}
 		return;
