@@ -13,8 +13,8 @@ public class ParallelTMAXCalculator extends TMAXCalaculator {
 	
 	private static final int MAX_NUM_THREADS = 4;
 	
-	protected ParallelTMAXCalculator(String inputPath) {
-		super(inputPath);
+	protected ParallelTMAXCalculator() {
+
 	}
 	
 	// the records are split equally between the threads to compute averages.

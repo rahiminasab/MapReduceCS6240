@@ -7,8 +7,7 @@ import weatherdata.TMAXCalaculator;
  */
 public class SEQ_TMAXCalculator extends TMAXCalaculator {
 	
-	public SEQ_TMAXCalculator(String inputPath) {
-		super(inputPath);
+	public SEQ_TMAXCalculator() {
 		name = "SEQUENTIAL";
 	}
 	

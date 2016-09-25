@@ -62,63 +62,67 @@ public class Main {
 	 */
 	public static void main(String[] args) throws InterruptedException {
 		String path = args[0];
-		String method = "";
-		
-		Scanner s = new Scanner(System.in);
+		TMAXCalaculator.readInput(path);
 		while(true) {
-			printHelp();
+			String method = "";
 			
-			method = s.next(); 
-			if(!methods.contains(method)) {
-				System.out.println("\nInvalid key was entered!\n");
-				continue;
+			Scanner s = new Scanner(System.in);
+			while(true) {
+				printHelp();
+				
+				method = s.next(); 
+				if(method.equals("q")) System.exit(0);
+				if(!methods.contains(method)) {
+					System.out.println("\nInvalid key was entered!\n");
+					continue;
+				}
+				break;
+				
 			}
-			break;
 			
+			boolean isDelayed = false;
+			while(true) {
+				System.out.print("\nDo you want to enforce delays in the updates? (Y/n) ");
+				//Scanner s = new Scanner(System.in);
+				String ans = s.next().toLowerCase();
+				isDelayed = (ans.equals("y") || ans.equals("yes"))? true : false;
+				break;
+			}
+			//s.close();
+			
+			TMAXCalaculator calculator = null;
+			
+			switch (method) {
+			case SEQUENTIAL:
+				calculator = new SEQ_TMAXCalculator();
+				break;
+			case NOLOCK:
+				calculator = new NOLOCK_TMAXCalculator();
+				break;
+			
+			case COARSE:
+				calculator = new COARSE_TMAXCalculator();
+				break;
+			
+			case FINE:
+				calculator = new FINE_TMAXCalculator();
+				break;
+			
+			case NOSHARE:
+				calculator = new NOSHARE_TMAXCalculator();
+				break;
+	
+			default:
+				printHelp();
+				return;
+			}
+			runJob(calculator, isDelayed);
+			//System.out.println(TMAXCalaculator.aveMap.get("CA007025280").getAverage());
 		}
-		
-		boolean isDelayed = false;
-		while(true) {
-			System.out.print("\nDo you want to enforce delays in the updates? (Y/n) ");
-			//Scanner s = new Scanner(System.in);
-			String ans = s.next().toLowerCase();
-			isDelayed = (ans.equals("y") || ans.equals("yes"))? true : false;
-			break;
-		}
-		s.close();
-		
-		TMAXCalaculator calculator = null;
-		
-		switch (method) {
-		case SEQUENTIAL:
-			calculator = new SEQ_TMAXCalculator(path);
-			break;
-		case NOLOCK:
-			calculator = new NOLOCK_TMAXCalculator(path);
-			break;
-		
-		case COARSE:
-			calculator = new COARSE_TMAXCalculator(path);
-			break;
-		
-		case FINE:
-			calculator = new FINE_TMAXCalculator(path);
-			break;
-		
-		case NOSHARE:
-			calculator = new NOSHARE_TMAXCalculator(path);
-			break;
-
-		default:
-			printHelp();
-			return;
-		}
-		runJob(calculator, isDelayed);
-		//System.out.println(TMAXCalaculator.aveMap.get("CA007025280").getAverage());
 	}
 	
 	public static void printHelp() {
-		System.out.println("\nPlease choose the method of computation (type one of the followings):\n");
+		System.out.println("\nPlease choose the method of computation (type one of the followings) or type q to quit:\n");
 		System.out.println("\t -sequential");
 		System.out.println("\t -nolock");
 		System.out.println("\t -coarse");

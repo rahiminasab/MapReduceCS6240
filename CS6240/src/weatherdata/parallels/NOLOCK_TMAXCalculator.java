@@ -6,8 +6,7 @@ package weatherdata.parallels;
  */
 public class NOLOCK_TMAXCalculator extends ParallelTMAXCalculator {
 	
-	public NOLOCK_TMAXCalculator(String inputPath) {
-		super(inputPath);
+	public NOLOCK_TMAXCalculator() {
 		name = "NO-LOCK";
 	}
 

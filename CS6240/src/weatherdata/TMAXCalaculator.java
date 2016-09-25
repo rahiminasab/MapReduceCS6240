@@ -44,15 +44,15 @@ public abstract class TMAXCalaculator {
 		return aveMap;
 	}
 	
-	protected TMAXCalaculator(String inputPath) {
-		dataLines = readInput(inputPath);
-		numberOfRecords = dataLines.size();
+	protected TMAXCalaculator() {
+		
 	}
 	
 	/*
 	 * stores all the records as separate lines in dataLines.
 	 */
-	private ArrayList<String> readInput(String path) {
+	public static void readInput(String path) {
+		System.out.println("\nReading the input file...");
 		ArrayList<String> lines = null;
 		File f = new File(path);
 		try {
@@ -66,7 +66,9 @@ public abstract class TMAXCalaculator {
 			System.err.println("The path to weather data is invalid!");
 			System.exit(0);
 		}
-		return lines;
+		dataLines =  lines;
+		System.out.println("\nReading the input file COMPLETE\n");
+		numberOfRecords = dataLines.size();
 	}
 	
 	/*

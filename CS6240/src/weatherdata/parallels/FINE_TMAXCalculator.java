@@ -15,8 +15,7 @@ public class FINE_TMAXCalculator extends ParallelTMAXCalculator {
 	 */
 	public static ConcurrentHashMap<String, AverageInfo> aveMap = new ConcurrentHashMap<String, AverageInfo>();
 	
-	public FINE_TMAXCalculator(String inputPath) {
-		super(inputPath);
+	public FINE_TMAXCalculator() {
 		name = "FINE-LOCK";
 	}
 

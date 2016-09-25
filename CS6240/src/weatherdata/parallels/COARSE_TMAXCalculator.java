@@ -11,8 +11,7 @@ import weatherdata.helpers.TmaxRecord;
  */
 public class COARSE_TMAXCalculator extends ParallelTMAXCalculator {
 	
-	public COARSE_TMAXCalculator(String inputPath) {
-		super(inputPath);
+	public COARSE_TMAXCalculator() {
 		name = "COARSE-LOCK";
 	}
 	
