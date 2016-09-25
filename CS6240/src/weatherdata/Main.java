@@ -60,6 +60,7 @@ public class Main {
 	 * third is optional which asks whether we should have delays with Fib(17).
 	 *  
 	 */
+	@SuppressWarnings("resource")
 	public static void main(String[] args) throws InterruptedException {
 		String path = args[0];
 		TMAXCalaculator.readInput(path);

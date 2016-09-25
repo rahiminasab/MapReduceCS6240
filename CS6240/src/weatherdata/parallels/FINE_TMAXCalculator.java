@@ -1,7 +1,6 @@
 package weatherdata.parallels;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import weatherdata.helpers.AverageInfo;
@@ -37,28 +36,14 @@ public class FINE_TMAXCalculator extends ParallelTMAXCalculator {
 	 */
 	private static void insertRecord(TmaxRecord newRecord, ConcurrentHashMap<String, AverageInfo> map, boolean isDelayed) {
 		String station = newRecord.getStation();
-		if(map.get(station) == null)
+		AverageInfo inf = map.get(station);
+		if(inf == null)
 			map.computeIfAbsent(station, makeAverageInfo(newRecord.getReading(),isDelayed));
 		else
-			map.computeIfPresent(station, updateAverageInfo(newRecord.getReading(),isDelayed));
+			inf.synchronizedUpdateAverage(newRecord.getReading(), isDelayed);
 		
 	}
 	
-	/*
-	 * mapping function if the key was present in the map
-	 */
-	private static BiFunction<? super String, ? super AverageInfo, ? extends AverageInfo> updateAverageInfo(
-			double reading, boolean isDelayed) {
-		BiFunction<String, AverageInfo, AverageInfo> func = new BiFunction<String, AverageInfo, AverageInfo>() {
-
-			@Override
-			public AverageInfo apply(String t, AverageInfo u) {
-				u.synchronizedUpdateAverage(reading, isDelayed);
-				return u;
-			}
-		};
-		return func;
-	}
 	/*
 	 * mapping function if the key was not present in the map
 	 */
