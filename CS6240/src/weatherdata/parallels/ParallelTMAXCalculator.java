@@ -20,7 +20,7 @@ public class ParallelTMAXCalculator extends TMAXCalaculator {
 	// the records are split equally between the threads to compute averages.
 	// Children will tell the WorkThreads the way to compute averages.
 	@Override
-	protected void calc(boolean isDelayed) throws InterruptedException {
+	public void calc(boolean isDelayed) throws InterruptedException {
 		
 		TMAXCalaculator.clearMap();
 		

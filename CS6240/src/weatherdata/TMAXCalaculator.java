@@ -34,7 +34,7 @@ public abstract class TMAXCalaculator {
 	 * - FINE_LOCK
 	 * - NO_SHARE
 	 */
-	protected String name;
+	public String name;
 	
 	public static void clearMap() {
 		aveMap = new HashMap<String, AverageInfo>();
@@ -125,7 +125,7 @@ public abstract class TMAXCalaculator {
 	 * children of this class may have different approaches for average computation (ex. sequential/parallel).
 	 * That difference is reflected by this method.
 	 */
-	protected abstract void calc(boolean isDelayed) throws InterruptedException;
+	public abstract void calc(boolean isDelayed) throws InterruptedException;
 	
 	
 }

@@ -13,7 +13,7 @@ public class SEQ_TMAXCalculator extends TMAXCalaculator {
 	
 	//Here we just compute averages from the first record to the last, sequentially.
 	@Override
-	protected void calc(boolean isDelayed) {
+	public void calc(boolean isDelayed) {
 		SEQ_TMAXCalculator.clearMap();
 		SEQ_TMAXCalculator.computeAverages(0, SEQ_TMAXCalculator.numberOfRecords, SEQ_TMAXCalculator.aveMap, isDelayed);
 	}

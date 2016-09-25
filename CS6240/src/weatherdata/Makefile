@@ -4,9 +4,9 @@ weatherdata.jar: Main.java build.gradle Makefile
 	gradle shadowJar
 	cp build/libs/weatherdata-all.jar weatherdata.jar
 
-run: weatherdata.jar
+local: weatherdata.jar
 	rm -rf output
-	java -jar weatherdata.jar 1877.csv
+	java -Xmx2048m -jar weatherdata.jar input.csv
 
 clean:
 	rm -rf build weatherdata.jar output .gradle

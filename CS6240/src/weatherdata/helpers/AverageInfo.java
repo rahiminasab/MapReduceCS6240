@@ -7,16 +7,17 @@ public class AverageInfo  {
 	
 	private static final int N = 17; //If delayed, we compute Fib(N)
 	
-	private double average; //Average TMAX for an station so far
+	private double runningSum; //the running sum for an station
 	private int numOfInstances; // number of instances for an station so far
 
 	public AverageInfo() {
-		average = 0;
+		runningSum = 0;
 		numOfInstances = 0;
 	}
 	
 	public double getAverage() {
-		return average;
+		//return average;
+		return runningSum/numOfInstances;
 	}
 	
 	/*
@@ -26,7 +27,8 @@ public class AverageInfo  {
 		if(isDelayed)
 			fibonacciBarrier(N);
 		numOfInstances++;
-		average += (newInstance - average)/(numOfInstances);
+		runningSum+=newInstance;
+		//average += (newInstance - average)/(numOfInstances);
 	}
 	
 	/*
@@ -38,14 +40,16 @@ public class AverageInfo  {
 		if(isDelayed)
 			fibonacciBarrier(N);
 		numOfInstances++;
-		average += (newInstance - average)/(numOfInstances);
+		runningSum+=newInstance;
+		//average += (newInstance - average)/(numOfInstances);
 	}
 	
 	/*
 	 * if we want to merge a value of AverageInfo object into this object for a same key.
 	 */
 	public void mergeAverage(AverageInfo other) {
-		average = (average*numOfInstances+other.average*other.numOfInstances)/(numOfInstances+other.numOfInstances);
+		//average = (average*numOfInstances+other.average*other.numOfInstances)/(numOfInstances+other.numOfInstances);
+		runningSum+=other.runningSum;
 		numOfInstances += other.numOfInstances;
 	}
 	

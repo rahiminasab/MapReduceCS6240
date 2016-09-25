@@ -1,6 +1,8 @@
 package weatherdata.parallels;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import weatherdata.helpers.AverageInfo;
 import weatherdata.helpers.TmaxRecord;
@@ -33,15 +35,46 @@ public class FINE_TMAXCalculator extends ParallelTMAXCalculator {
 	/*
 	 * do the same job as its parent function, but it calls the synchronizedUpdate on the value objects to maintain a lock on them.
 	 */
-	private static void insertRecord(TmaxRecord record, ConcurrentHashMap<String, AverageInfo> map, boolean isDelayed) {
-		AverageInfo info = map.get(record.getStation());
-		if(info != null)
-			info.synchronizedUpdateAverage(record.getReading(), isDelayed);
-		else {
-		    info = new AverageInfo();
-			info.synchronizedUpdateAverage(record.getReading(), isDelayed);
-			map.put(record.getStation(), info);
-		}
+	private static void insertRecord(TmaxRecord newRecord, ConcurrentHashMap<String, AverageInfo> map, boolean isDelayed) {
+		String station = newRecord.getStation();
+		if(map.get(station) == null)
+			map.computeIfAbsent(station, makeAverageInfo(newRecord.getReading(),isDelayed));
+		else
+			map.computeIfPresent(station, updateAverageInfo(newRecord.getReading(),isDelayed));
+		
 	}
+	
+	/*
+	 * mapping function if the key was present in the map
+	 */
+	private static BiFunction<? super String, ? super AverageInfo, ? extends AverageInfo> updateAverageInfo(
+			double reading, boolean isDelayed) {
+		BiFunction<String, AverageInfo, AverageInfo> func = new BiFunction<String, AverageInfo, AverageInfo>() {
+
+			@Override
+			public AverageInfo apply(String t, AverageInfo u) {
+				u.synchronizedUpdateAverage(reading, isDelayed);
+				return u;
+			}
+		};
+		return func;
+	}
+	/*
+	 * mapping function if the key was not present in the map
+	 */
+	private static Function<? super String, ? extends AverageInfo> makeAverageInfo(double reading, boolean isDelayed) {
+		Function<String, AverageInfo> func = new Function<String, AverageInfo>() {
+
+			@Override
+			public AverageInfo apply(String t) {
+				AverageInfo info = new AverageInfo();
+				info.synchronizedUpdateAverage(reading, isDelayed);
+				return info;
+			}
+		};
+		
+		return func;
+	}
+
 
 }
