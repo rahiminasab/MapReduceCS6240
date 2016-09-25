@@ -8,6 +8,8 @@ public class RunTimeStat {
 	private long min;
 	private double average;
 	
+	String delayPrefix;
+	
 	public long getMin() {
 		return min;
 	}
@@ -17,7 +19,7 @@ public class RunTimeStat {
 	public double getAverage() {
 		return average;
 	}
-	public RunTimeStat(long[] runTimes) {
+	public RunTimeStat(long[] runTimes, String prefix) {
 		long sum = 0;
 		long max = Long.MIN_VALUE;
 		long min = Long.MAX_VALUE;
@@ -31,9 +33,11 @@ public class RunTimeStat {
 		this.max = max;
 		this.min = min;
 		this.average = sum/(double)runTimes.length;
+		
+		delayPrefix = prefix;
 	}
 	public void printResultsFor(String method) {
-		System.out.println("running time stats for "+ method+" case:");
+		System.out.println("\n\nrunning time stats for "+ method+" case "+delayPrefix+" delays:");
 		System.out.println("-----------------------------");
 		System.out.println("max: "+ getMax());
 		System.out.println("min: "+ getMin());

@@ -1,5 +1,8 @@
 package weatherdata;
 
+import java.util.ArrayList;
+import java.util.Scanner;
+
 import weatherdata.helpers.RunTimeStat;
 import weatherdata.parallels.COARSE_TMAXCalculator;
 import weatherdata.parallels.FINE_TMAXCalculator;
@@ -7,14 +10,23 @@ import weatherdata.parallels.NOLOCK_TMAXCalculator;
 import weatherdata.parallels.NOSHARE_TMAXCalculator;
 import weatherdata.sequential.SEQ_TMAXCalculator;
 
-public class TestRun {
+public class Main {
 	private static final String SEQUENTIAL = "-sequential";
 	private static final String NOLOCK = "-nolock";
 	private static final String COARSE = "-coarse";
 	private static final String FINE = "-fine";
 	private static final String NOSHARE = "-noshare";
-	private static final String DELAYED = "-d";
+	private static ArrayList<String> methods = new ArrayList<String>();
 	private static final int NUMBER_OF_RUNS = 10;
+	
+	static {
+		methods.add(SEQUENTIAL);
+		methods.add(NOLOCK);
+		methods.add(COARSE);
+		methods.add(FINE);
+		methods.add(NOSHARE);
+	}
+	
 	
 	/*
 	 * runs the clac function for NUMBER_OF_RUNS and stores the running times in an array,
@@ -23,7 +35,6 @@ public class TestRun {
 	 */
 	public static void runJob(TMAXCalaculator obj, boolean isDelayed) throws InterruptedException {
 		String prefix = (isDelayed)? "with" : "without";
-		System.out.println(prefix+" delay version:");
 		long[] runtimes = new long[NUMBER_OF_RUNS];
 		for(int i = 0; i < runtimes.length; i++) {
 			long start = System.currentTimeMillis();
@@ -31,7 +42,7 @@ public class TestRun {
 			long end = System.currentTimeMillis(); 
 			runtimes[i] = end-start;
 		}
-		RunTimeStat stats = new RunTimeStat(runtimes);
+		RunTimeStat stats = new RunTimeStat(runtimes, prefix);
 		stats.printResultsFor(obj.name);
 		System.out.println("--------------------------------------------------\n");
 		
@@ -46,25 +57,35 @@ public class TestRun {
 	 *  -coarse
 	 *  -fine
 	 *  -noshare
-	 * third is optional which if present specifies we should have delays with Fib(17).
-	 *  -d
+	 * third is optional which asks whether we should have delays with Fib(17).
+	 *  
 	 */
 	public static void main(String[] args) throws InterruptedException {
-		if(args.length < 2) {
-			printHelp();
-			return;
-		}
 		String path = args[0];
-		String method = args[1];
-		boolean isDelayed = false;
-		if(args.length > 2) {
-			if(args[2].equals(DELAYED))
-				isDelayed = true;
-			else {
-				printHelp();
-				return;
+		String method = "";
+		
+		Scanner s = new Scanner(System.in);
+		while(true) {
+			printHelp();
+			
+			method = s.next(); 
+			if(!methods.contains(method)) {
+				System.out.println("\nInvalid key was entered!\n");
+				continue;
 			}
+			break;
+			
 		}
+		
+		boolean isDelayed = false;
+		while(true) {
+			System.out.print("\nDo you want to enforce delays in the updates? (Y/n) ");
+			//Scanner s = new Scanner(System.in);
+			String ans = s.next().toLowerCase();
+			isDelayed = (ans.equals("y") || ans.equals("yes"))? true : false;
+			break;
+		}
+		s.close();
 		
 		TMAXCalaculator calculator = null;
 		
@@ -97,18 +118,12 @@ public class TestRun {
 	}
 	
 	public static void printHelp() {
-		System.out.println("You need to provide at least two arguments in order to run this program!\n");
-		System.out.println("The first argument should be the path of the file which has the weather data.\n");
-		System.out.println("The second argument specifies the method of computation. It should be one of the followings:");
+		System.out.println("\nPlease choose the method of computation (type one of the followings):\n");
 		System.out.println("\t -sequential");
 		System.out.println("\t -nolock");
 		System.out.println("\t -coarse");
 		System.out.println("\t -fine");
 		System.out.println("\t -noshare\n");
-		System.out.println("The third argument (optional) by which the computation will be slowed down is:");
-		System.out.println("\t -d\n");
-		System.out.println("example: ");
-		System.out.println("java -jar TMAXCalculator.jar input/1877.csv -sequential -d");
 		
 	}
 }
